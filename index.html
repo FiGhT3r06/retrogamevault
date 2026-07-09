@@ -140,6 +140,7 @@
         let currentSlot = null;
         let dosInstance = null;
 
+        // Kontrola hesla
         function checkPassword() {
             const input = document.getElementById('password-input').value;
             if (input === "Slaviapraha1892") {
@@ -150,6 +151,7 @@
             }
         }
 
+        // Výběr slotu -> skok na výběr her
         function selectSlot(slotNumber) {
             currentSlot = slotNumber;
             document.getElementById('selected-slot-title').innerText = `Vybral jsi: Slot ${slotNumber}`;
@@ -157,12 +159,13 @@
             document.getElementById('game-screen').classList.remove('hidden');
         }
 
+        // Tlačítko zpět na sloty
         function backToSlots() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('vault-screen').classList.remove('hidden');
         }
 
-        // FUNKCE: Správné a stabilní spuštění hry v js-dos v8
+        // FUNKCE: Správné a stabilní spuštění hry v js-dos v8 z tvé funkční Cloudflare URL
         function startDiablo() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('emulator-screen').classList.remove('hidden');
@@ -170,9 +173,9 @@
             // Vyčištění kontejneru pro jistotu před startem
             document.getElementById("game-container").innerHTML = "";
 
-            // Moderní spuštění ZIP balíku přímo přes metodu run() u js-dos v8
+            // Spuštění přes tvou ověřenou veřejnou subdoménu
             Dos(document.getElementById("game-container"))
-                .run("https://pub-2fbfbaec6be2441ca027cc7f0a8c2794.r2.dev/diablo1.zip")
+                .run("https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/diablo1.zip")
                 .then((ci) => {
                     dosInstance = ci;
                 })
@@ -181,6 +184,7 @@
                 });
         }
 
+        // FUNKCE: Vypnutí hry a návrat do menu
         function exitGame() {
             if (dosInstance) {
                 try { dosInstance.exit(); } catch(e) {}
