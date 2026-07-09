@@ -162,6 +162,7 @@
             document.getElementById('vault-screen').classList.remove('hidden');
         }
 
+        // FUNKCE: Spuštění s automatickým streamováním ZIPu
         function startDiablo() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('emulator-screen').classList.remove('hidden');
@@ -169,20 +170,14 @@
 
             const dos = Dos(document.getElementById("game-container"));
             
-            dos.run({
-                url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/diablo1.zip",
-                mounts: [{
-                    type: "zip",
-                    mountPoint: "drive_c",
-                    onDemand: true 
-                }],
-                autoStart: true,
-                startExecutable: "diablo.exe"
-            }).then((ci) => {
-                dosInstance = ci;
-            }).catch((err) => {
-                console.error("Chyba při startu emulátoru:", err);
-            });
+            // Předáváme rovnou textovou URL. js-dos v8 si sám obstará on-demand stahování.
+            dos.run("https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/diablo1.zip")
+               .then((ci) => {
+                   dosInstance = ci;
+               })
+               .catch((err) => {
+                   console.error("Chyba při startu emulátoru:", err);
+               });
         }
 
         function exitGame() {
