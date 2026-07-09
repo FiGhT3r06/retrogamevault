@@ -140,7 +140,6 @@
         let currentSlot = null;
         let dosInstance = null;
 
-        // Kontrola hesla
         function checkPassword() {
             const input = document.getElementById('password-input').value;
             if (input === "Slaviapraha1892") {
@@ -151,7 +150,6 @@
             }
         }
 
-        // Výběr slotu -> skok na výběr her
         function selectSlot(slotNumber) {
             currentSlot = slotNumber;
             document.getElementById('selected-slot-title').innerText = `Vybral jsi: Slot ${slotNumber}`;
@@ -159,32 +157,36 @@
             document.getElementById('game-screen').classList.remove('hidden');
         }
 
-        // Tlačítko zpět na sloty
         function backToSlots() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('vault-screen').classList.remove('hidden');
         }
 
-        // FUNKCE: Správné a stabilní spuštění hry v js-dos v8 z tvé funkční Cloudflare URL
+        // FUNKCE: Správné spuštění streamování pro js-dos v8
         function startDiablo() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('emulator-screen').classList.remove('hidden');
-
-            // Vyčištění kontejneru pro jistotu před startem
             document.getElementById("game-container").innerHTML = "";
 
-            // Spuštění přes tvou ověřenou veřejnou subdoménu
-            Dos(document.getElementById("game-container"))
-                .run("https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/diablo1.zip")
-                .then((ci) => {
-                    dosInstance = ci;
-                })
-                .catch((err) => {
-                    console.error("Chyba při startu emulátoru:", err);
-                });
+            // V8 inicializace – nejprve vytvoříme emulátor, konfiguraci mu předáme v metodě run
+            const dos = Dos(document.getElementById("game-container"));
+            
+            dos.run({
+                url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/diablo1.zip",
+                mounts: [{
+                    type: "zip",
+                    mountPoint: "drive_c",
+                    onDemand: true 
+                }],
+                autoStart: true,
+                startExecutable: "diablo.exe"
+            }).then((ci) => {
+                dosInstance = ci;
+            }).catch((err) => {
+                console.error("Chyba při startu emulátoru:", err);
+            });
         }
 
-        // FUNKCE: Vypnutí hry a návrat do menu
         function exitGame() {
             if (dosInstance) {
                 try { dosInstance.exit(); } catch(e) {}
