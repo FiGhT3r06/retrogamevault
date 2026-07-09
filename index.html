@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retro Game Vault</title>
-    <link rel="stylesheet" href="https://js-dos.com/v8/js-dos.css">
-    <script src="https://js-dos.com/v8/js-dos.js"></script>
+    <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+    <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -162,13 +162,11 @@
             document.getElementById('vault-screen').classList.remove('hidden');
         }
 
-        // FUNKCE: Správné spuštění streamování pro js-dos v8
         function startDiablo() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('emulator-screen').classList.remove('hidden');
             document.getElementById("game-container").innerHTML = "";
 
-            // V8 inicializace – nejprve vytvoříme emulátor, konfiguraci mu předáme v metodě run
             const dos = Dos(document.getElementById("game-container"));
             
             dos.run({
