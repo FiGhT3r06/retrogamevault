@@ -110,7 +110,7 @@
 
     <div id="vault-screen" class="container hidden">
         <h1>Retro Game Vault</h1>
-        <h3>Vyber si volný slot for hraní:</h3>
+        <h3>Vyber si volný slot pro hraní:</h3>
         <div class="grid-slots">
             <script>
                 for (let i = 1; i <= 10; i++) {
@@ -162,17 +162,23 @@
             document.getElementById('vault-screen').classList.remove('hidden');
         }
 
-        // FUNKCE: Spuštění Diabla přes veřejnou subdoménu Cloudflare .r2.dev
+        // FUNKCE: Správné a stabilní spuštění hry v js-dos v8
         function startDiablo() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('emulator-screen').classList.remove('hidden');
 
-            // Spuštění emulátoru s upravenou veřejnou URL adresou
-            Dos(document.getElementById("game-container")).ready((fs, main) => {
-                main(["-c", "diablo.exe"]).then((ci) => {
+            // Vyčištění kontejneru pro jistotu před startem
+            document.getElementById("game-container").innerHTML = "";
+
+            // Moderní spuštění ZIP balíku přímo přes metodu run() u js-dos v8
+            Dos(document.getElementById("game-container"))
+                .run("https://pub-2fbfbaec6be2441ca027cc7f0a8c2794.r2.dev/diablo1.zip")
+                .then((ci) => {
                     dosInstance = ci;
+                })
+                .catch((err) => {
+                    console.error("Chyba při startu emulátoru:", err);
                 });
-            }).run("https://pub-2fbfbaec6be2441ca027cc7f0a8c2794.r2.dev/diablo1.zip");
         }
 
         function exitGame() {
