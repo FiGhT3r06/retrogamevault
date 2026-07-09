@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Game Vault</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        input[type="password"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .grid-slots {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        .slot-btn {
+            padding: 15px;
+            background-color: #f0f0f0;
+            color: black;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .slot-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .games-list {
+            margin-top: 20px;
+        }
+        .game-choice {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            width: 200px;
+            background-color: red;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="container">
+        <h2>Zadej přístupové heslo:</h2>
+        <input type="password" id="password-input" placeholder="Heslo...">
+        <button onclick="checkPassword()">Vstoupit</button>
+        <p id="error-msg" style="color: red; display: none;">Nesprávné heslo!</p>
+    </div>
+
+    <div id="vault-screen" class="container hidden">
+        <h1>Retro Game Vault</h1>
+        <h3>Vyber si volný slot pro hraní:</h3>
+        <div class="grid-slots">
+            <script>
+                for (let i = 1; i <= 10; i++) {
+                    document.write(`<button class="slot-btn" onclick="selectSlot(${i})">Slot ${i} (Volný)</button>`);
+                }
+            </script>
+        </div>
+    </div>
+
+    <div id="game-screen" class="container hidden">
+        <h2 id="selected-slot-title"></h2>
+        <h3>Vyber si hru, kterou chceš spustit:</h3>
+        <div class="games-list">
+            <a href="diablo.html" class="game-choice">Diablo 1</a>
+            <a href="ghostmaster.html" class="game-choice" style="background-color: #4A0E4E;">Ghost Master</a>
+        </div>
+        <br>
+        <button onclick="backToSlots()" style="background-color: gray;">Zpět na sloty</button>
+    </div>
+
+    <script>
+        let currentSlot = null;
+
+        // Kontrola hesla
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            // Přesně tvoje heslo
+            if (input === "Slaviapraha1892") {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('vault-screen').classList.remove('hidden');
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        // Výběr slotu -> skok na výběr her
+        function selectSlot(slotNumber) {
+            currentSlot = slotNumber;
+            document.getElementById('selected-slot-title').innerText = `Vybral jsi: Slot ${slotNumber}`;
+            document.getElementById('vault-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+        }
+
+        // Tlačítko zpět
+        function backToSlots() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('vault-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
 
