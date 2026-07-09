@@ -64,7 +64,6 @@
         .games-list {
             margin-top: 20px;
         }
-        /* Upravené tlačítko hry na klasické tlačítko místo odkazu */
         .game-choice {
             display: block;
             margin: 10px auto;
@@ -77,7 +76,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        /* Styl pro kontejner s emulátorem, aby byl přes celý displej */
         #emulator-screen {
             position: fixed;
             top: 0;
@@ -112,7 +110,7 @@
 
     <div id="vault-screen" class="container hidden">
         <h1>Retro Game Vault</h1>
-        <h3>Vyber si volný slot pro hraní:</h3>
+        <h3>Vyber si volný slot for hraní:</h3>
         <div class="grid-slots">
             <script>
                 for (let i = 1; i <= 10; i++) {
@@ -142,7 +140,6 @@
         let currentSlot = null;
         let dosInstance = null;
 
-        // Kontrola hesla
         function checkPassword() {
             const input = document.getElementById('password-input').value;
             if (input === "Slaviapraha1892") {
@@ -153,7 +150,6 @@
             }
         }
 
-        // Výběr slotu -> skok na výběr her
         function selectSlot(slotNumber) {
             currentSlot = slotNumber;
             document.getElementById('selected-slot-title').innerText = `Vybral jsi: Slot ${slotNumber}`;
@@ -161,30 +157,28 @@
             document.getElementById('game-screen').classList.remove('hidden');
         }
 
-        // Tlačítko zpět na sloty
         function backToSlots() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('vault-screen').classList.remove('hidden');
         }
 
-        // FUNKCE: Spuštění Diabla z tvého Cloudflare R2
+        // FUNKCE: Spuštění Diabla přes veřejnou subdoménu Cloudflare .r2.dev
         function startDiablo() {
-            // Skryjeme výběr her a ukážeme emulátor přes celou obrazovku
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('emulator-screen').classList.remove('hidden');
 
-            // Nastartování js-dos emulace s tvým přesným zipem
-            dosInstance = Dos(document.getElementById("game-container"));
-            dosInstance.run("https://d29dbbc4eb60434541aba3172a18973f.r2.cloudflarestorage.com/retrogamevault/diablo1.zip");
+            // Spuštění emulátoru s upravenou veřejnou URL adresou
+            Dos(document.getElementById("game-container")).ready((fs, main) => {
+                main(["-c", "diablo.exe"]).then((ci) => {
+                    dosInstance = ci;
+                });
+            }).run("https://pub-2fbfbaec6be2441ca027cc7f0a8c2794.r2.dev/diablo1.zip");
         }
 
-        // FUNKCE: Vypnutí hry a návrat do menu
         function exitGame() {
             if (dosInstance) {
-                // Pokusíme se stopnout emulátor, pokud to verze dovoluje
-                try { dosInstance.stop(); } catch(e) {}
+                try { dosInstance.exit(); } catch(e) {}
             }
-            // Vyčistíme okno s hrou a vrátíme se na výběr her
             document.getElementById('game-container').innerHTML = '';
             document.getElementById('emulator-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
