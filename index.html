@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Game Vault</title>
-    <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
-    <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+    <title>Retro Game Vault - Windows XP</title>
+    
+    <script src="https://copy.sh/v86/build/libv86.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,20 +62,22 @@
         .slot-btn:hover {
             background-color: #e0e0e0;
         }
-        .games-list {
-            margin-top: 20px;
-        }
-        .game-choice {
+        .system-action {
             display: block;
-            margin: 10px auto;
-            padding: 10px 20px;
-            width: 200px;
-            background-color: red;
+            margin: 20px auto;
+            padding: 15px 30px;
+            width: 250px;
+            background-color: #0053e1; /* Typická Windows XP modrá */
             color: white;
             border: none;
             font-weight: bold;
+            font-size: 16px;
             border-radius: 4px;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .system-action:hover {
+            background-color: #0042b4;
         }
         #emulator-screen {
             position: fixed;
@@ -97,6 +100,18 @@
             margin: 10px;
             align-self: flex-start;
         }
+        /* Styl pro plátno Windows XP emulátoru */
+        #v86-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #v86-screen canvas {
+            max-width: 100%;
+            max-height: calc(100vh - 60px);
+        }
     </style>
 </head>
 <body>
@@ -110,7 +125,7 @@
 
     <div id="vault-screen" class="container hidden">
         <h1>Retro Game Vault</h1>
-        <h3>Vyber si volný slot pro hraní:</h3>
+        <h3>Vyber si volný slot pro spuštění systému:</h3>
         <div class="grid-slots">
             <script>
                 for (let i = 1; i <= 10; i++) {
@@ -122,23 +137,22 @@
 
     <div id="game-screen" class="container hidden">
         <h2 id="selected-slot-title"></h2>
-        <h3>Vyber si hru, kterou chceš spustit:</h3>
-        <div class="games-list">
-            <button onclick="startDiablo()" class="game-choice">Diablo 1</button>
-            <button class="game-choice" style="background-color: #4A0E4E;">Ghost Master</button>
+        <h3>Systém je připraven ke spuštění</h3>
+        <div>
+            <button onclick="startWinXP()" class="system-action">Spustit Windows XP</button>
         </div>
         <br>
         <button onclick="backToSlots()" style="background-color: gray;">Zpět na sloty</button>
     </div>
 
     <div id="emulator-screen" class="hidden">
-        <button onclick="exitGame()" style="color: white; font-weight: bold;">⬅ Ukončit hru</button>
+        <button onclick="exitGame()" style="color: white; font-weight: bold;">⬅ Vypnout Windows XP</button>
         <div id="game-container"></div>
     </div>
 
     <script>
         let currentSlot = null;
-        let dosInstance = null;
+        let v86Instance = null;
 
         function checkPassword() {
             const input = document.getElementById('password-input').value;
@@ -162,28 +176,36 @@
             document.getElementById('vault-screen').classList.remove('hidden');
         }
 
-        // FUNKCE: Opravené spuštění pro js-dos v8
-        function startDiablo() {
+        // FUNKCE: Spuštění Windows XP přes v86 emulátor
+        function startWinXP() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('emulator-screen').classList.remove('hidden');
-            document.getElementById("game-container").innerHTML = "";
+            
+            // Příprava čistého kontejneru pro zobrazení systému
+            document.getElementById("game-container").innerHTML = '<div id="v86-screen"></div>';
 
-            // V8 syntaxe: Odkaz na hru vkládáme přímo do konfigurace emulátoru
-            Dos(document.getElementById("game-container"), {
-                url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/diablo1.zip",
-                onEvent: (event, ci) => {
-                    // Jakmile je emulátor plně načtený, uložíme si instanci pro tlačítko "Ukončit hru"
-                    if (event === "ci-ready") {
-                        dosInstance = ci;
-                    }
-                }
+            v86Instance = new V86Starter({
+                wasm_path: "https://copy.sh/v86/build/v86.wasm",
+                memory_size: 512 * 1024 * 1024, // 512 MB RAM pro plynulý běh
+                vga_memory_size: 16 * 1024 * 1024,
+                screen_container: document.getElementById("v86-screen"),
+                bios: { url: "https://copy.sh/v86/bios/seabios.bin" },
+                vga_bios: { url: "https://copy.sh/v86/bios/vgabios.bin" },
+                
+                // === ZDE ZMĚŇ URL ZA SVOJÍ ADRESU Z CLOUDFLARE R2 ===
+                hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/winxp.img", async: true },
+                
+                autostart: true,
             });
         }
 
         function exitGame() {
-            if (dosInstance) {
-                try { dosInstance.exit(); } catch(e) {}
+            // Bezpečné ukončení emulace Windows XP a uvolnění paměti RAM v prohlížeči
+            if (v86Instance) {
+                try { v86Instance.stop(); } catch(e) {}
+                v86Instance = null;
             }
+            
             document.getElementById('game-container').innerHTML = '';
             document.getElementById('emulator-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
