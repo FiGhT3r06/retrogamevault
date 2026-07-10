@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Retro Herní Trezor</title>
-    <script src="https://unpkg.com/v86/build/libv86.js"></script>
+    <script src="libv86.js"></script>
     <style>
         body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
         #login-ui { text-align: center; }
@@ -37,9 +37,9 @@
 
         function startEmulator() {
             const config = {
-                wasm_path: "https://unpkg.com/v86/build/v86.wasm",
-                bios: { url: "https://unpkg.com/v86/bios/seabios.bin" },
-                vga_bios: { url: "https://unpkg.com/v86/bios/vgabios.bin" },
+                wasm_path: "v86.wasm",
+                bios: { url: "seabios.bin" },
+                vga_bios: { url: "vgabios.bin" },
                 hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
                 screen_container: document.getElementById('v86-container'),
                 autostart: true,
@@ -48,12 +48,12 @@
                 network_relay_url: "wss://relay.widgetry.org/"
             };
 
-            // Univerzální spouštěč (vybere, co je zrovna dostupné)
-            const Emulator = window.V86Starter || window.V86;
-            if (Emulator) {
-                new Emulator(config);
-            } else {
-                alert("Chyba: Emulátor se nepodařilo načíst (zkontroluj připojení k internetu).");
+            // Tohle je jediná verze spouštěče, která bude fungovat s tvými staženými soubory
+            try {
+                new V86Starter(config);
+            } catch(e) {
+                console.error("Chyba spuštění:", e);
+                alert("Chyba: Emulátor se nepodařilo spustit. Zkontroluj, že máš na GitHubu nahrané všechny 4 soubory.");
             }
         }
     </script>
