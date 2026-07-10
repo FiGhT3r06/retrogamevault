@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Retro Herní Trezor</title>
-    <script src="libv86.js"></script>
+    <script src="/retrogamevault/libv86.js"></script>
 </head>
 <body style="background:#000; color:#fff; text-align:center; padding-top:20px;">
     <h1>Retro Herní Trezor</h1>
@@ -18,12 +18,11 @@
                 return;
             }
 
-            // Pokud soubory vidíš na adrese /retrogamevault/libv86.js, 
-            // musí být v objektu níže tyto cesty:
+            // Absolutní cesty do složky retrogamevault
             new V86Starter({
-                wasm_path: "v86.wasm",
-                bios: { url: "seabios.bin" },
-                vga_bios: { url: "vgabios.bin" },
+                wasm_path: "/retrogamevault/v86.wasm",
+                bios: { url: "/retrogamevault/seabios.bin" },
+                vga_bios: "/retrogamevault/vgabios.bin",
                 hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
                 screen_container: document.getElementById('screen'),
                 autostart: true
