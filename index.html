@@ -3,31 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Retro Herní Trezor</title>
-    <script src="/retrogamevault/libv86.js"></script>
+
+    <script src="https://fight3r06.github.io/retrogamevault/libv86.js"></script>
 </head>
-<body style="background:#000; color:#fff; text-align:center; padding-top:20px;">
-    <h1>Retro Herní Trezor</h1>
-    <input type="password" id="pass" placeholder="Heslo...">
-    <button onclick="start()">Vstoupit</button>
-    <div id="screen" style="width:800px; height:600px; margin:20px auto; border:1px solid #333;"></div>
 
-    <script>
-        function start() {
-            if (document.getElementById('pass').value !== 'Slaviapraha1892') {
-                alert("Špatné heslo");
-                return;
-            }
+<body style="background:#000;color:#fff;text-align:center;padding-top:20px;">
 
-            // Absolutní cesty do složky retrogamevault
-            new V86Starter({
-                wasm_path: "https://fight3r06.github.io/retrogamevault/",
-                bios: { url: "https://fight3r06.github.io/retrogamevault/" },
-                vga_bios: "https://fight3r06.github.io/retrogamevault/",
-                hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
-                screen_container: document.getElementById('screen'),
-                autostart: true
-            });
-        }
-    </script>
+<h1>Retro Herní Trezor</h1>
+
+<input type="password" id="pass" placeholder="Heslo...">
+<button onclick="start()">Vstoupit</button>
+
+<div id="screen"
+     style="width:800px;height:600px;margin:20px auto;border:1px solid #333;">
+</div>
+
+<script>
+function start()
+{
+    if(document.getElementById("pass").value !== "Slaviapraha1892")
+    {
+        alert("Špatné heslo");
+        return;
+    }
+
+    new V86Starter({
+        wasm_path: "https://fight3r06.github.io/retrogamevault/v86.wasm",
+
+        bios: {
+            url: "https://fight3r06.github.io/retrogamevault/seabios.bin"
+        },
+
+        vga_bios: {
+            url: "https://fight3r06.github.io/retrogamevault/vgabios.bin"
+        },
+
+        hda: {
+            url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img",
+            async: true
+        },
+
+        screen_container: document.getElementById("screen"),
+        autostart: true
+    });
+}
+</script>
+
 </body>
 </html>
