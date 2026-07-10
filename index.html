@@ -3,25 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Retro Herní Trezor</title>
-    <script src="https://cdn.jsdelivr.net/gh/copy/v86@master/build/libv86.js"></script>
-    <style>
-        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        #login-ui { text-align: center; }
-        #emulator-ui { display: none; width: 100%; height: 100%; }
-        input { padding: 10px; }
-        button { padding: 10px 20px; background: #0078d7; color: #fff; border: none; cursor: pointer; }
-    </style>
+    <script src="https://unpkg.com/v86/build/libv86.js"></script>
 </head>
-<body>
-    <div id="login-ui">
+<body style="margin:0; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
+    <div id="login-ui" style="text-align:center;">
         <h1>Retro Herní Trezor</h1>
         <input type="password" id="pass" placeholder="Heslo...">
         <br><br>
-        <button onclick="enter()">Vstoupit</button>
+        <button onclick="enter()" style="padding:10px 20px; cursor:pointer;">Vstoupit</button>
     </div>
 
-    <div id="emulator-ui">
-        <div id="v86-container" style="width: 100%; height: 100%;"></div>
+    <div id="emulator-ui" style="display:none; width:100%; height:100%;">
+        <div id="v86-container" style="width:100%; height:100%;"></div>
     </div>
 
     <script>
@@ -29,32 +22,24 @@
             if (document.getElementById('pass').value === 'Slaviapraha1892') {
                 document.getElementById('login-ui').style.display = 'none';
                 document.getElementById('emulator-ui').style.display = 'block';
-                startEmulator();
-            } else {
-                alert("Špatné heslo");
-            }
+                start();
+            } else { alert("Špatné heslo"); }
         }
 
-        function startEmulator() {
-            const config = {
-                // Taháme vše ze stejného stabilního zdroje
-                wasm_path: "https://cdn.jsdelivr.net/gh/copy/v86@master/build/v86.wasm",
-                bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/seabios.bin" },
-                vga_bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/vgabios.bin" },
-                hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
-                screen_container: document.getElementById('v86-container'),
-                autostart: true,
-                memory_size: 512 * 1024 * 1024,
-                vga_memory_size: 16 * 1024 * 1024,
-                network_relay_url: "wss://relay.widgetry.org/"
-            };
-
-            // Univerzální spouštěč
+        function start() {
             try {
-                new V86Starter(config);
-            } catch(e) {
-                new V86(config);
-            }
+                new V86Starter({
+                    wasm_path: "https://unpkg.com/v86/build/v86.wasm",
+                    bios: { url: "https://unpkg.com/v86/bios/seabios.bin" },
+                    vga_bios: { url: "https://unpkg.com/v86/bios/vgabios.bin" },
+                    hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
+                    screen_container: document.getElementById('v86-container'),
+                    autostart: true,
+                    memory_size: 512 * 1024 * 1024,
+                    vga_memory_size: 16 * 1024 * 1024,
+                    network_relay_url: "wss://relay.widgetry.org/"
+                });
+            } catch(e) { console.error(e); }
         }
     </script>
 </body>
