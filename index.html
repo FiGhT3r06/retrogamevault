@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retro Herní Trezor - Windows XP</title>
-    <script src="https://copy.sh/v86/build/libv86.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/copy/v86@master/build/libv86.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #111; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
@@ -162,14 +162,14 @@
 
             const savedBuffer = await getSlotState(slotId);
 
-            // Nastavení emulátoru v86
+            // ZMĚNA: Použití CDN adres pro obejití CORS blokace tvůrců emulátoru
             let config = {
-                wasm_path: "https://copy.sh/v86/build/v86.wasm",
+                wasm_path: "https://cdn.jsdelivr.net/gh/copy/v86@master/build/v86.wasm",
                 memory_size: 512 * 1024 * 1024, // 512 MB RAM
                 vga_memory_size: 16 * 1024 * 1024,
                 screen_container: document.getElementById("v86-screen"),
-                bios: { url: "https://copy.sh/v86/bios/seabios.bin" },
-                vga_bios: { url: "https://copy.sh/v86/bios/vgabios.bin" },
+                bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/seabios.bin" },
+                vga_bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/vgabios.bin" },
                 
                 // === TVŮJ CLOUDFLARE R2 DISK ===
                 hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
@@ -185,7 +185,6 @@
                 config.initial_state = { buffer: savedBuffer };
             }
 
-            // OPRAVENO: Použití window.V86 místo V86Starter
             v86Instance = new window.V86(config);
         }
 
