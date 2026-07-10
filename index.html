@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Retro Herní Trezor</title>
-    <!-- Stabilní CDN pro v86 -->
-    <script src="https://cdn.jsdelivr.net/gh/copy/v86@master/build/libv86.js"></script>
+    <script src="libv86.js"></script>
 </head>
-<body style="background:#000; color:#fff; font-family:sans-serif; text-align:center; padding-top:20px;">
+<body style="background:#000; color:#fff; text-align:center; padding-top:20px;">
     <h1>Retro Herní Trezor</h1>
     <input type="password" id="pass" placeholder="Heslo...">
     <button onclick="start()">Vstoupit</button>
-    <div id="screen" style="width:100%; height:80vh; margin-top:20px;"></div>
+    <div id="screen" style="width:800px; height:600px; margin:20px auto; border:1px solid #333;"></div>
 
     <script>
         function start() {
@@ -19,18 +18,12 @@
                 return;
             }
 
-            // DETEKCE: Zjistíme, jak se emulátor po načtení jmenuje
-            const V86Constructor = window.V86Starter || window.V86 || window.v86;
-
-            if (!V86Constructor) {
-                alert("CHYBA: Emulátor se nenačetl. Zkontroluj konzoli (F12).");
-                return;
-            }
-
-            new V86Constructor({
-                wasm_path: "https://cdn.jsdelivr.net/gh/copy/v86@master/build/v86.wasm",
-                bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/seabios.bin" },
-                vga_bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/vgabios.bin" },
+            // Pokud soubory vidíš na adrese /retrogamevault/libv86.js, 
+            // musí být v objektu níže tyto cesty:
+            new V86Starter({
+                wasm_path: "v86.wasm",
+                bios: { url: "seabios.bin" },
+                vga_bios: { url: "vgabios.bin" },
                 hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
                 screen_container: document.getElementById('screen'),
                 autostart: true
