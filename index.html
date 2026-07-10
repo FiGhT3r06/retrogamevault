@@ -3,213 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Game Vault - Windows XP</title>
-    
+    <title>Retro Herní Trezor - Windows XP</title>
     <script src="https://copy.sh/v86/build/libv86.js"></script>
-
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-        }
-        input[type="password"] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #000;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        button:hover {
-            background-color: #333;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .grid-slots {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            max-width: 400px;
-            margin: 20px auto;
-        }
-        .slot-btn {
-            padding: 15px;
-            background-color: #f0f0f0;
-            color: black;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .slot-btn:hover {
-            background-color: #e0e0e0;
-        }
-        .system-action {
-            display: block;
-            margin: 20px auto;
-            padding: 15px 30px;
-            width: 250px;
-            background-color: #0053e1; /* Typická Windows XP modrá */
-            color: white;
-            border: none;
-            font-weight: bold;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .system-action:hover {
-            background-color: #0042b4;
-        }
-        #emulator-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: black;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-        }
-        #game-container {
-            flex-grow: 1;
-            width: 100%;
-            height: 100%;
-        }
-        #emulator-screen button {
-            background-color: #333;
-            margin: 10px;
-            align-self: flex-start;
-        }
-        /* Styl pro plátno Windows XP emulátoru */
-        #v86-screen {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #v86-screen canvas {
-            max-width: 100%;
-            max-height: calc(100vh - 60px);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #111; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        
+        /* Obrazovka pro přihlášení */
+        #login-screen { text-align: center; background: #222; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
+        #login-screen h1 { font-size: 24px; margin-bottom: 20px; color: #0078d7; }
+        #password-input { padding: 12px; width: 250px; border-radius: 6px; border: 1px solid #444; background: #333; color: #fff; text-align: center; font-size: 16px; margin-bottom: 15px; outline: none; }
+        #login-btn { padding: 12px 30px; border: none; border-radius: 6px; background: #0078d7; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: background 0.2s; }
+        #login-btn:hover { background: #005a9e; }
+        #login-error { color: #ff4d4d; margin-top: 10px; font-size: 14px; display: none; }
+
+        /* Obrazovka Výběru Slotů */
+        #menu-screen { width: 100%; max-width: 900px; padding: 20px; display: none; text-align: center; max-height: 100vh; overflow-y: auto; }
+        #menu-screen h2 { margin-bottom: 25px; color: #0078d7; font-size: 28px; text-transform: uppercase; letter-spacing: 1px; }
+        .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .slot-card { background: #222; border: 1px solid #333; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; transition: transform 0.2s, border-color 0.2s; }
+        .slot-card:hover { transform: translateY(-5px); border-color: #0078d7; }
+        .slot-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #eee; }
+        .slot-status { font-size: 13px; color: #888; margin-bottom: 15px; }
+        .slot-btn { width: 100%; padding: 10px; border: none; border-radius: 6px; background: #22c55e; color: white; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .slot-btn:hover { background: #16a34a; }
+
+        /* Obrazovka emulátoru */
+        #emulator-screen { width: 100vw; height: 100vh; display: none; flex-direction: column; background: #000; }
+        .control-bar { height: 50px; background: #222; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid #333; }
+        .active-slot-info { font-weight: bold; color: #0078d7; font-size: 16px; }
+        .control-buttons { display: flex; gap: 15px; }
+        .control-btn { padding: 8px 16px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: white; font-size: 14px; }
+        .save-btn { background: #0078d7; }
+        .save-btn:hover { background: #005a9e; }
+        .exit-btn { background: #dc2626; }
+        .exit-btn:hover { background: #b91c1c; }
+        
+        /* Okno emulátoru v86 */
+        #v86-screen { flex: 1; width: 100%; height: calc(100vh - 50px); overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        #v86-screen canvas { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="container">
-        <h2>Zadej přístupové heslo:</h2>
-        <input type="password" id="password-input" placeholder="Heslo...">
-        <button onclick="checkPassword()">Vstoupit</button>
-        <p id="error-msg" style="color: red; display: none;">Nesprávné heslo!</p>
-    </div>
-
-    <div id="vault-screen" class="container hidden">
-        <h1>Retro Game Vault</h1>
-        <h3>Vyber si volný slot pro spuštění systému:</h3>
-        <div class="grid-slots">
-            <script>
-                for (let i = 1; i <= 10; i++) {
-                    document.write(`<button class="slot-btn" onclick="selectSlot(${i})">Slot ${i} (Volný)</button>`);
-                }
-            </script>
-        </div>
-    </div>
-
-    <div id="game-screen" class="container hidden">
-        <h2 id="selected-slot-title"></h2>
-        <h3>Systém je připraven ke spuštění</h3>
-        <div>
-            <button onclick="startWinXP()" class="system-action">Spustit Windows XP</button>
-        </div>
+    <div id="login-screen">
+        <h1>Retro Herní Trezor</h1>
+        <input type="password" id="password-input" placeholder="Zadej přístupové heslo...">
         <br>
-        <button onclick="backToSlots()" style="background-color: gray;">Zpět na sloty</button>
+        <button id="login-btn" onclick="checkPassword()">Vstoupit do trezoru</button>
+        <div id="login-error">Nesprávné heslo! Zkus to znovu.</div>
     </div>
 
-    <div id="emulator-screen" class="hidden">
-        <button onclick="exitGame()" style="color: white; font-weight: bold;">⬅ Vypnout Windows XP</button>
-        <div id="game-container"></div>
+    <div id="menu-screen">
+        <h2>Výběr paměťového slotu</h2>
+        <div class="slots-grid" id="slots-container"></div>
+    </div>
+
+    <div id="emulator-screen">
+        <div class="control-bar">
+            <div class="active-slot-info" id="current-slot-display">Aktivní slot: Žádný</div>
+            <div class="control-buttons">
+                <button class="control-btn save-btn" onclick="saveCurrentState()">💾 ULOŽIT STAV</button>
+                <button class="control-btn exit-btn" onclick="exitEmulator()">❌ UKONČIT HRU</button>
+            </div>
+        </div>
+        <div id="v86-screen"></div>
     </div>
 
     <script>
-        let currentSlot = null;
         let v86Instance = null;
+        let currentSlotId = null;
+        const dbName = "RetroXP_Databaze_Slotu";
 
+        // Kontrola hesla
         function checkPassword() {
-            const input = document.getElementById('password-input').value;
-            if (input === "Slaviapraha1892") {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('vault-screen').classList.remove('hidden');
+            const pass = document.getElementById("password-input").value;
+            if (pass === "Slaviapraha1892") {
+                document.getElementById("login-screen").classList.add("hidden");
+                document.getElementById("menu-screen").style.display = "block";
+                initSlotsMenu();
             } else {
-                document.getElementById('error-msg').style.display = 'block';
+                const err = document.getElementById("login-error");
+                err.style.display = "block";
+                document.getElementById("password-input").value = "";
             }
         }
 
-        function selectSlot(slotNumber) {
-            currentSlot = slotNumber;
-            document.getElementById('selected-slot-title').innerText = `Vybral jsi: Slot ${slotNumber}`;
-            document.getElementById('vault-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
+        // IndexedDB pomocné funkce pro ukládání stavů
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains("sloty")) {
+                        db.createObjectStore("sloty");
+                    }
+                };
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onerror = (e) => reject(e.target.error);
+            });
         }
 
-        function backToSlots() {
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('vault-screen').classList.remove('hidden');
+        async function checkSlotData(slotId) {
+            const db = await openDB();
+            const tx = db.transaction("sloty", "readonly");
+            const store = tx.objectStore("sloty");
+            const request = store.get(slotId);
+            return new Promise((resolve) => {
+                request.onsuccess = () => resolve(request.result ? true : false);
+            });
         }
 
-        // FUNKCE: Spuštění Windows XP přes v86 emulátor
-        function startWinXP() {
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('emulator-screen').classList.remove('hidden');
+        async function getSlotState(slotId) {
+            const db = await openDB();
+            const tx = db.transaction("sloty", "readonly");
+            const store = tx.objectStore("sloty");
+            const request = store.get(slotId);
+            return new Promise((resolve) => request.onsuccess = () => resolve(request.result));
+        }
+
+        async function saveSlotState(slotId, buffer) {
+            const db = await openDB();
+            const tx = db.transaction("sloty", "readwrite");
+            const store = tx.objectStore("sloty");
+            store.put(buffer, slotId);
+            return new Promise((resolve) => tx.oncomplete = resolve);
+        }
+
+        // Generování slotů v menu
+        async function initSlotsMenu() {
+            const container = document.getElementById("slots-container");
+            container.innerHTML = "";
             
-            // Příprava čistého kontejneru pro zobrazení systému
-            document.getElementById("game-container").innerHTML = '<div id="v86-screen"></div>';
+            for (let i = 1; i <= 10; i++) {
+                const slotId = `slot_${i}`;
+                const hasData = await checkSlotData(slotId);
+                
+                const card = document.createElement("div");
+                card.className = "slot-card";
+                card.innerHTML = `
+                    <div class="slot-title">Slot ${i}</div>
+                    <div class="slot-status" id="status-${slotId}">${hasData ? "🟢 Uložená pozice existuje" : "⚪ Prázdný slot (Čistý start)"}</div>
+                    <button class="slot-btn" onclick="launchSlot('${slotId}', ${i})">${hasData ? "Načíst a Spustit" : "Spustit čisté XP"}</button>
+                `;
+                container.appendChild(card);
+            }
+        }
 
-            v86Instance = new V86Starter({
+        // Spuštění emulátoru pro vybraný slot
+        async function launchSlot(slotId, slotNumber) {
+            currentSlotId = slotId;
+            document.getElementById("menu-screen").style.display = "none";
+            document.getElementById("emulator-screen").style.display = "flex";
+            document.getElementById("current-slot-display").innerText = `Aktivní slot: Slot ${slotNumber}`;
+            document.getElementById("v86-screen").innerHTML = "";
+
+            const savedBuffer = await getSlotState(slotId);
+
+            // Nastavení emulátoru v86
+            let config = {
                 wasm_path: "https://copy.sh/v86/build/v86.wasm",
-                memory_size: 512 * 1024 * 1024, // 512 MB RAM pro plynulý běh
+                memory_size: 512 * 1024 * 1024, // 512 MB RAM
                 vga_memory_size: 16 * 1024 * 1024,
                 screen_container: document.getElementById("v86-screen"),
                 bios: { url: "https://copy.sh/v86/bios/seabios.bin" },
                 vga_bios: { url: "https://copy.sh/v86/bios/vgabios.bin" },
                 
-                // === ZDE ZMĚŇ URL ZA SVOJÍ ADRESU Z CLOUDFLARE R2 ===
-                hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/winxp.img", async: true },
+                // === TVŮJ CLOUDFLARE R2 DISK ===
+                hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
+                
+                // === SÍŤOVÝ RELAY PRO MULTIPLAYER ===
+                network_relay_url: "wss://relay.widgetry.org/",
                 
                 autostart: true,
+            };
+
+            // Pokud máme uložený stav pro tento slot, načteme ho místo bootování od nuly
+            if (savedBuffer) {
+                config.initial_state = { buffer: savedBuffer };
+            }
+
+            v86Instance = new V86Starter(config);
+        }
+
+        // Uložení aktuálního stavu
+        function saveCurrentState() {
+            if (!v86Instance || !currentSlotId) return;
+
+            alert("Spouštím ukládání. Během ukládání na nic neklikaj a počkej na potvrzení.");
+
+            v86Instance.save_state().then(async function(buffer) {
+                if (buffer) {
+                    await saveSlotState(currentSlotId, buffer);
+                    alert("💾 Stav úspěšně uložen do tvého prohlížeče!");
+                } else {
+                    alert("Chyba: Nepodařilo se vygenerovat otisk paměti.");
+                }
+            }).catch(function(err) {
+                alert("Chyba při ukládání: " + err);
             });
         }
 
-        function exitGame() {
-            // Bezpečné ukončení emulace Windows XP a uvolnění paměti RAM v prohlížeči
-            if (v86Instance) {
-                try { v86Instance.stop(); } catch(e) {}
-                v86Instance = null;
+        // Ukončení emulátoru a návrat do menu
+        function exitEmulator() {
+            if (confirm("Opravdu chceš ukončit Windows XP? Neuložený postup bude ztracen.")) {
+                if (v86Instance) {
+                    v86Instance.destroy();
+                    v86Instance = null;
+                }
+                document.getElementById("emulator-screen").style.display = "none";
+                document.getElementById("menu-screen").style.display = "block";
+                initSlotsMenu();
             }
-            
-            document.getElementById('game-container').innerHTML = '';
-            document.getElementById('emulator-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
         }
+        
+        // Podpora klávesy Enter na přihlašovací obrazovce
+        document.getElementById("password-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
     </script>
 </body>
 </html>
