@@ -3,43 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>Retro Herní Trezor</title>
-    <script src="https://unpkg.com/v86/build/libv86.js"></script>
+    <!-- Stabilní CDN pro v86 -->
+    <script src="https://cdn.jsdelivr.net/gh/copy/v86@master/build/libv86.js"></script>
 </head>
-<body style="margin:0; background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
-    <div id="login-ui" style="text-align:center;">
-        <h1>Retro Herní Trezor</h1>
-        <input type="password" id="pass" placeholder="Heslo...">
-        <br><br>
-        <button onclick="enter()" style="padding:10px 20px; cursor:pointer;">Vstoupit</button>
-    </div>
-
-    <div id="emulator-ui" style="display:none; width:100%; height:100%;">
-        <div id="v86-container" style="width:100%; height:100%;"></div>
-    </div>
+<body style="background:#000; color:#fff; font-family:sans-serif; text-align:center; padding-top:20px;">
+    <h1>Retro Herní Trezor</h1>
+    <input type="password" id="pass" placeholder="Heslo...">
+    <button onclick="start()">Vstoupit</button>
+    <div id="screen" style="width:100%; height:80vh; margin-top:20px;"></div>
 
     <script>
-        function enter() {
-            if (document.getElementById('pass').value === 'Slaviapraha1892') {
-                document.getElementById('login-ui').style.display = 'none';
-                document.getElementById('emulator-ui').style.display = 'block';
-                start();
-            } else { alert("Špatné heslo"); }
-        }
-
         function start() {
-            try {
-                new V86Starter({
-                    wasm_path: "https://unpkg.com/v86/build/v86.wasm",
-                    bios: { url: "https://unpkg.com/v86/bios/seabios.bin" },
-                    vga_bios: { url: "https://unpkg.com/v86/bios/vgabios.bin" },
-                    hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
-                    screen_container: document.getElementById('v86-container'),
-                    autostart: true,
-                    memory_size: 512 * 1024 * 1024,
-                    vga_memory_size: 16 * 1024 * 1024,
-                    network_relay_url: "wss://relay.widgetry.org/"
-                });
-            } catch(e) { console.error(e); }
+            if (document.getElementById('pass').value !== 'Slaviapraha1892') {
+                alert("Špatné heslo");
+                return;
+            }
+
+            // DETEKCE: Zjistíme, jak se emulátor po načtení jmenuje
+            const V86Constructor = window.V86Starter || window.V86 || window.v86;
+
+            if (!V86Constructor) {
+                alert("CHYBA: Emulátor se nenačetl. Zkontroluj konzoli (F12).");
+                return;
+            }
+
+            new V86Constructor({
+                wasm_path: "https://cdn.jsdelivr.net/gh/copy/v86@master/build/v86.wasm",
+                bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/seabios.bin" },
+                vga_bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/vgabios.bin" },
+                hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
+                screen_container: document.getElementById('screen'),
+                autostart: true
+            });
         }
     </script>
 </body>
