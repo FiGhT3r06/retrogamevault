@@ -4,30 +4,37 @@
     <title>Windows XP v Prohlížeči</title>
     <style>
         body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #screen_container { width: 800px; height: 600px; }
-        canvas { width: 100%; height: 100%; }
+        #screen { width: 800px; height: 600px; }
     </style>
 </head>
 <body>
-    <div id="screen_container">
-        <div id="screen"></div>
-    </div>
+    <div id="screen"></div>
     
-    <!-- Import v86 z CDN nebo lokálních souborů -->
     <script src="libv86.js"></script> 
+    
     <script>
-        var emulator = new V86Starter({
-            wasm_path: "v86.wasm",
-            bios: { url: "seabios.bin" },
-            vga_bios: { url: "vgabios.bin" },
-            // Váš odkaz na R2 bucket
-            hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img" },
-            autostart: true,
-            screen_container: document.getElementById("screen"),
-            memory_size: 512 * 1024 * 1024, // 512MB RAM pro XP
-            vga_memory_size: 8 * 1024 * 1024,
-            network_relay_url: "wss://relay.widgetry.org/",
-        });
+        // Počkáme, až se celá stránka a skripty načtou
+        window.onload = function() {
+            // Kontrola, jestli se knihovna načetla
+            if (typeof V86Starter === "undefined") {
+                console.error("CHYBA: libv86.js se nenačetlo! Zkontroluj cestu k souboru.");
+                return;
+            }
+
+            console.log("Knihovna načtena, spouštím emulátor...");
+
+            var emulator = new V86Starter({
+                wasm_path: "v86.wasm",
+                bios: { url: "seabios.bin" },
+                vga_bios: { url: "vgabios.bin" },
+                hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img" },
+                autostart: true,
+                screen_container: document.getElementById("screen"),
+                memory_size: 512 * 1024 * 1024,
+                vga_memory_size: 8 * 1024 * 1024,
+                network_relay_url: "wss://relay.widgetry.org/",
+            });
+        };
     </script>
 </body>
 </html>
