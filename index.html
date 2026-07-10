@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Retro Herní Trezor</title>
-    <script src="libv86.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/copy/v86@master/build/libv86.js"></script>
     <style>
         body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
         #login-ui { text-align: center; }
@@ -37,9 +37,10 @@
 
         function startEmulator() {
             const config = {
-                wasm_path: "v86.wasm",
-                bios: { url: "seabios.bin" },
-                vga_bios: { url: "vgabios.bin" },
+                // Taháme vše ze stejného stabilního zdroje
+                wasm_path: "https://cdn.jsdelivr.net/gh/copy/v86@master/build/v86.wasm",
+                bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/seabios.bin" },
+                vga_bios: { url: "https://cdn.jsdelivr.net/gh/copy/v86@master/bios/vgabios.bin" },
                 hda: { url: "https://pub-0a65454d925f42baa6be6550b056fbe8.r2.dev/RetroXP.img", async: true },
                 screen_container: document.getElementById('v86-container'),
                 autostart: true,
@@ -48,12 +49,11 @@
                 network_relay_url: "wss://relay.widgetry.org/"
             };
 
-            // Tohle je jediná verze spouštěče, která bude fungovat s tvými staženými soubory
+            // Univerzální spouštěč
             try {
                 new V86Starter(config);
             } catch(e) {
-                console.error("Chyba spuštění:", e);
-                alert("Chyba: Emulátor se nepodařilo spustit. Zkontroluj, že máš na GitHubu nahrané všechny 4 soubory.");
+                new V86(config);
             }
         }
     </script>
