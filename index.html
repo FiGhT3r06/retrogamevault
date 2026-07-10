@@ -1,28 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Windows XP v Prohlížeči</title>
+    <title>RetroXP Emulator</title>
     <style>
-        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { background: #000; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
         #screen { width: 800px; height: 600px; }
     </style>
 </head>
 <body>
     <div id="screen"></div>
-    
-    <script src="libv86.js"></script> 
+
+    <script src="libv86.js"></script>
     
     <script>
-        // Počkáme, až se celá stránka a skripty načtou
         window.onload = function() {
-            // Kontrola, jestli se knihovna načetla
-            if (typeof V86Starter === "undefined") {
-                console.error("CHYBA: libv86.js se nenačetlo! Zkontroluj cestu k souboru.");
-                return;
-            }
-
-            console.log("Knihovna načtena, spouštím emulátor...");
-
             var emulator = new V86Starter({
                 wasm_path: "v86.wasm",
                 bios: { url: "seabios.bin" },
@@ -31,8 +22,7 @@
                 autostart: true,
                 screen_container: document.getElementById("screen"),
                 memory_size: 512 * 1024 * 1024,
-                vga_memory_size: 8 * 1024 * 1024,
-                network_relay_url: "wss://relay.widgetry.org/",
+                vga_memory_size: 8 * 1024 * 1024
             });
         };
     </script>
